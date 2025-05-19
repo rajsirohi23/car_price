@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoValue Pro | Advanced Car Price Predictor</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <!-- AOS Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <!-- Custom styles -->
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --primary-dark: #2667cc;
+            --secondary: #ff006e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --success: #38b000;
+            --danger: #d90429;
+            --warning: #ffbe0b;
+            --info: #00b4d8;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            min-height: 100vh;
+            color: var(--light);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://cdnjs.cloudflare.com/ajax/lib/placeholder-assets/backgrounds/circuit-board-pattern.svg');
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        
+        .navbar {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--light);
+        }
+        
+        .logo-icon {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .app-container {
+            padding: 40px 0;
+        }
+        
+        .main-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .main-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .card-header h1 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin: 0;
+            background: linear-gradient(90deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .intro-text {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .intro-text h5 {
+            font-weight: 300;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--light);
+            height: 58px;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.2);
+            color: var(--light);
+        }
+        
+        .form-floating label {
+            color: rgba(255, 255, 255, 0.7);
+            padding-left: 20px;
+        }
+        
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select ~ label {
+            opacity: 0.8;
+            transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+        }
+        
+        .input-group-text {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--light);
+            border-radius: 12px 0 0 12px;
+        }
+        
+        .form-icon {
+            color: var(--primary);
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .btn-predict {
+            height: 58px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            box-shadow: 0 10px 20px rgba(58, 134, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-predict:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            box-shadow: 0 15px 25px rgba(58, 134, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-predict:active {
+            transform: translateY(1px);
+            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.4);
+        }
+        
+        .btn-predict .btn-text {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn-predict .btn-icon {
+            margin-left: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn-predict::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn-predict:hover::before {
+            left: 100%;
+        }
+        
+        .prediction-result {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .prediction-result.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .prediction-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .prediction-label {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 0;
+        }
+        
+        .features-section {
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .floating-bg {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .floating-bg.one {
+            top: -200px;
+            right: -200px;
+        }
+        
+        .floating-bg.two {
+            bottom: -200px;
+            left: -200px;
+            background: var(--secondary);
+        }
+        
+        .dashboard-section {
+            padding: 4rem 0 2rem;
+        }
+        
+        .dashboard-title {
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stats-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-value {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .car-image-container {
+            position: relative;
+            margin: 2rem 0;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .car-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .car-image-container:hover .car-image {
+            transform: scale(1.05);
+        }
+        
+        .car-image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        }
+        
+        .car-image-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .car-image-text {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .footer {
+            padding: 2rem 0;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--light);
+            margin-bottom: 1rem;
+        }
+        
+        .footer-text {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--light);
+            opacity: 0.7;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
+        
+        .form-select option {
+            background-color: #212529;
+            color: var(--light);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            .card-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .prediction-value {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .app-container {
+                padding: 20px 0;
+            }
+            
+            .card-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .intro-text h5 {
+                font-size: 1rem;
+            }
+            
+            .car-image-container {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background elements -->
+    <div class="floating-bg one"></div>
+    <div class="floating-bg two"></div>
+    
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-car-alt logo-icon"></i>
+                <span>AutoValue Pro</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-chart-line me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-history me-1"></i> History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main content -->
+    <div class="container app-container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Main prediction card -->
+                <div class="main-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <h1 class="text-center">Advanced Car Price Predictor</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="intro-text" data-aos="fade-up" data-aos-delay="100">
+                            <h5>Get the most accurate market value for your vehicle using our AI-powered price prediction engine</h5>
+                        </div>
+                        
+                        <!-- Car selection image -->
+                        <!-- Car selection image -->
+                        <div class="car-image-container" data-aos="fade-up" data-aos-delay="200">
+                            <img src="{{ url_for('static', filename='images/car.png') }}" alt="Car Selection" class="car-image">
+                            <div class="car-image-overlay">
+                            <h4 class="car-image-title">Find Your Car's True Value</h4>
+                            <p class="car-image-text">Our advanced algorithm analyzes market trends and vehicle data to give you the most accurate price estimation.</p>
+                            </div>
+                        </div>
+                        
+                        <form id="predictionForm" data-aos="fade-up" data-aos-delay="300">
+                            <!-- Form Rows -->
+                            <div class="row">
+                                <!-- Company Selection -->
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-4">
+                                        <select class="form-select" id="company" name="company" required onchange="load_car_models(this.id,'car_models')">
+                                            <option value="" selected disabled>Select a company</option>
+                                            {% for company in companies %}
+                                            <option value="{{ company }}">{{ company }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="company"><i class="fas fa-building form-icon me-2"></i>Car Manufacturer</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Model Selection -->
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-4">
+                                        <select class="form-select" id="car_models" name="car_models" required>
+                                            <option value="" selected disabled>Select a model</option>
+                                        </select>
+                                        <label for="car_models"><i class="fas fa-car form-icon me-2"></i>Car Model</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Year Selection -->
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-4">
+                                        <select class="form-select" id="year" name="year" required>
+                                            <option value="" selected disabled>Select year</option>
+                                            {% for year in years %}
+                                            <option value="{{ year }}">{{ year }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="year"><i class="fas fa-calendar-alt form-icon me-2"></i>Year of Purchase</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Fuel Type Selection -->
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-4">
+                                        <select class="form-select" id="fuel_type" name="fuel_type" required>
+                                            <option value="" selected disabled>Select fuel type</option>
+                                            {% for fuel in fuel_types %}
+                                            <option value="{{ fuel }}">{{ fuel }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="fuel_type"><i class="fas fa-gas-pump form-icon me-2"></i>Fuel Type</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- KM Driven Input -->
+                                <div class="col-12">
+                                    <div class="form-floating mb-4">
+                                        <input type="number" class="form-control" id="kilo_driven" name="kilo_driven" placeholder="Enter kilometers driven" required>
+                                        <label for="kilo_driven"><i class="fas fa-tachometer-alt form-icon me-2"></i>Kilometers Driven</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Submit Button -->
+                                <div class="col-12" data-aos="fade-up" data-aos-delay="400">
+                                    <button type="button" class="btn btn-predict w-100" onclick="predict_price()">
+                                        <span class="btn-text">Predict Price</span>
+                                        <i class="fas fa-calculator btn-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <!-- Prediction Result Section -->
+                        <div class="prediction-result" id="predictionResult">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <i class="fas fa-tag fa-3x mb-3" style="color: var(--primary);"></i>
+                                </div>
+                                <div class="col-md-8 text-md-start text-center">
+                                    <p class="prediction-label">Estimated Car Value</p>
+                                    <h2 class="prediction-value" id="prediction">₹0</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features section -->
+                <div class="features-section" data-aos="fade-up">
+                    <h3 class="text-center mb-4">Why Choose Our Price Predictor?</h3>
+                    <div class="row">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <div class="feature-card p-4 text-center">
+                                <i class="fas fa-brain feature-icon"></i>
+                                <h5 class="feature-title">AI-Powered</h5>
+                                <p class="feature-text">Advanced machine learning algorithm trained on millions of car sales data points.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <div class="feature-card p-4 text-center">
+                                <i class="fas fa-chart-line feature-icon"></i>
+                                <h5 class="feature-title">Real-Time Market Data</h5>
+                                <p class="feature-text">Continuously updated with the latest market trends and pricing information.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <div class="feature-card p-4 text-center">
+                                <i class="fas fa-tachometer-alt feature-icon"></i>
+                                <h5 class="feature-title">High Accuracy</h5>
+                                <p class="feature-text">Over 95% prediction accuracy for most car models and conditions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Section -->
+    <div class="container dashboard-section">
+        <h2 class="dashboard-title text-center" data-aos="fade-up">Market Insights Dashboard</h2>
+        <div class="row">
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card">
+                    <h5 class="stats-value">2.4M+</h5>
+                    <p class="stats-label">Cars Analyzed</p>
+                    <div class="progress-bar mt-2">
+                        <div class="progress-value" style="width: 85%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card">
+                    <h5 class="stats-value">96.5%</h5>
+                    <p class="stats-label">Prediction Accuracy</p>
+                    <div class="progress-bar mt-2">
+                        <div class="progress-value" style="width: 96%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-card">
+                    <h5 class="stats-value">50K+</h5>
+                    <p class="stats-label">Daily Users</p>
+                    <div class="progress-bar mt-2">
+                        <div class="progress-value" style="width: 75%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="stats-card">
+                    <h5 class="stats-value">128+</h5>
+                    <p class="stats-label">Car Brands</p>
+                    <div class="progress-bar mt-2">
+                        <div class="progress-value" style="width: 90%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="footer-brand">
+                        <i class="fas fa-car-alt logo-icon"></i>
+                        <span>AutoValue Pro</span>
+                    </div>
+                    <p class="footer-text">The most accurate and advanced car price prediction platform powered by cutting-edge AI technology.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3 text-white">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3 text-white">Resources</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Pricing Guide</a></li>
+                        <li><a href="#">Car Value Tips</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="mb-3 text-white">Newsletter</h5>
+                    <p class="footer-text">Subscribe to our newsletter for the latest updates and automotive insights.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <p class="text-center mb-0 footer-text">© 2025 AutoValue Pro. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Analyzing vehicle data...</p>
+        </div>
+    </div>
+    
+    <!-- Bootstrap, jQuery and Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <!-- TensorFlow.js for client-side predictions (if needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    
+    <!-- Custom scripts -->
+    <script>
+        // Initialize AOS animation library
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+        
+        // Company model data mapping - populated from backend
+        let companyModels = {};
+        
+        // Function to load car models based on selected company
+        function load_car_models(company_id, car_model_id) {
+            var company = document.getElementById(company_id);
+            var car_model = document.getElementById(car_model_id);
+            
+            // Clear existing options
+            car_model.innerHTML = '<option value="" selected disabled>Select a model</option>';
+            
+            // Update dynamic car image based on company selection
+            updateCarImage(company.value);
+            
+            {% for company in companies %}
+            if (company.value == "{{ company }}") {
+                {% for model in car_models %}
+                {% if company in model %}
+                var newOption = document.createElement("option");
+                newOption.value = "{{ model }}";
+                newOption.innerHTML = "{{ model }}";
+                car_model.options.add(newOption);
+                {% endif %}
+                {% endfor %}
+            }
+            {% endfor %}
+        }
+        
+        // Function to update car image based on selection
+        function updateCarImage(company) {
+            // In a real implementation, this would use actual car brand images
+            // For now we'll just show different placeholder variations
+            const imageContainer = document.querySelector('.car-image');
+            if (company) {
+                // Simulate different placeholder images based on company selection
+                const seed = hashCode(company) % 10;
+                imageContainer.src = `/api/placeholder/800/400?text=${encodeURIComponent(company)}`;
+            }
+        }
+        
+        // Helper function to generate consistent hash from string
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return Math.abs(hash);
+        }
+        
+        // Function to predict car price
+        function predict_price() {
+            // Form validation
+            const form = document.getElementById('predictionForm');
+            const company = document.getElementById('company').value;
+            const carModel = document.getElementById('car_models').value;
+            const year = document.getElementById('year').value;
+            const fuelType = document.getElementById('fuel_type').value;
+            const kiloDriven = document.getElementById('kilo_driven').value;
+            
+            // Check if all fields are filled
+            if (!company || !carModel || !year || !fuelType || !kiloDriven) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('company', company);
+            formData.append('car_models', carModel);
+            formData.append('year', year);
+            formData.append('fuel_type', fuelType);
+            formData.append('kilo_driven', kiloDriven);
+            
+            // Prepare AJAX request
+            const xhr = new XMLHttpRequest({mozSystem: true});
+            xhr.open('POST', '/predict', true);
+            
+            // Handle response
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    // Hide loading overlay
+                    setTimeout(() => {
+                        document.getElementById('loadingOverlay').classList.remove('active');
+                        
+                        // Show prediction result
+                        if (xhr.status === 200) {
+                            const predictionResult = document.getElementById('predictionResult');
+                            const predictionValue = document.getElementById('prediction');
+                            
+                            // Format the prediction value with commas and currency symbol
+                            const price = parseInt(xhr.responseText).toLocaleString('en-IN');
+                            predictionValue.textContent = `₹${price}`;
+                            
+                            // Show prediction result with animation
+                            predictionResult.classList.add('active');
+                            
+                            // Add car details to prediction display
+                            addPredictionDetails(company, carModel, year, fuelType, kiloDriven);
+                            
+                            // Show success notification
+                            showNotification('Price prediction completed!', 'success');
+                        } else {
+                            // Show error notification
+                            showNotification('Error in prediction. Please try again.', 'error');
+                        }
+                    }, 1500); // Add a slight delay for better UX
+                }
+            };
+            
+            // Send request
+            xhr.send(formData);
+        }
+        
+        // Function to add prediction details
+        function addPredictionDetails(company, model, year, fuel, kms) {
+            // In a production app, you might want to display these details alongside the price
+            console.log("Prediction details:", {company, model, year, fuel, kms});
+        }
+        
+        // Function to show notification
+        function showNotification(message, type = 'info') {
+            // Create notification element if it doesn't exist
+            if (!document.getElementById('notification')) {
+                const notification = document.createElement('div');
+                notification.id = 'notification';
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '10px';
+                notification.style.color = 'white';
+                notification.style.fontWeight = '500';
+                notification.style.zIndex = '9999';
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                notification.style.transition = 'all 0.3s ease';
+                document.body.appendChild(notification);
+            }
+            
+            const notificationElement = document.getElementById('notification');
+            
+            // Set color based on type
+            if (type === 'success') {
+                notificationElement.style.background = 'linear-gradient(135deg, #38b000, #008000)';
+            } else if (type === 'error') {
+                notificationElement.style.background = 'linear-gradient(135deg, #d90429, #ef233c)';
+            } else {
+                notificationElement.style.background = 'linear-gradient(135deg, #3a86ff, #0077b6)';
+            }
+            
+            // Set message
+            notificationElement.textContent = message;
+            
+            // Show notification
+            notificationElement.style.opacity = '1';
+            notificationElement.style.transform = 'translateY(0)';
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                notificationElement.style.opacity = '0';
+                notificationElement.style.transform = 'translateY(-20px)';
+            }, 3000);
+        }
+        
+        // Add event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update car models dropdown when company changes
+            document.getElementById('company').addEventListener('change', function() {
+                load_car_models('company', 'car_models');
+            });
+            
+            // Add enter key support for form submission
+            document.getElementById('kilo_driven').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    predict_price();
+                }
+            });
+            
+            // Add animation to prediction button
+            const predictButton = document.querySelector('.btn-predict');
+            predictButton.addEventListener('mouseenter', () => {
+                predictButton.querySelector('.btn-icon').style.transform = 'translateX(5px)';
+            });
+            predictButton.addEventListener('mouseleave', () => {
+                predictButton.querySelector('.btn-icon').style.transform = 'translateX(0)';
+            });
+            
+            // Initialize tooltips if used
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+            
+            // Add smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Add dark mode toggle functionality
+        function toggleDarkMode() {
+            document.body.classList.toggle('light-mode');
+            
+            // Save preference to localStorage in a real application
+            const isDarkMode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            localStorage.setItem('preferredMode', isDarkMode);
+        }
+        
+        // Year range update for the footer copyright
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentYear = new Date().getFullYear();
+            document.querySelectorAll('.current-year').forEach(el => {
+                el.textContent = currentYear;
+            });
+        });
+    </script>
+    
+
+</body>
+</html>
